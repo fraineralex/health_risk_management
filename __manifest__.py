@@ -12,7 +12,7 @@
         # wizard views
         'wizard/ars_export_wizard_view.xml',
     ],
-    'icon': 'ars_template_export/static/src/img/icon.png',
+    #'icon': 'ars_template_export/static/src/img/icon.png',
     'installable': True,
     'application': True,
     'auto_install': True,
