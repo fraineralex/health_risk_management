@@ -64,10 +64,67 @@ class ArsExportWizard(models.TransientModel):
         column_width = 30 * excel_units
         header_style = easyxf(
             'pattern: pattern solid, fore_colour blue; font: colour white, bold True;')
-
         for col_num, header in enumerate(headers):
             worksheet.col(col_num).width = column_width
             worksheet.write(0, col_num, header, header_style)
+
+        history_moves = self.env['account.move'].search(
+            [('state', '=', 'posted')])
+
+        for col_num, move in enumerate(history_moves):
+            authorization_insurer = ''
+            service_date = move.date or ''
+            affiliate = ''
+            insured_name = move.partner_id.name or ''
+            id_number = move.partner_id.vat or ''
+            total_claimed = move.amount_total_signed or ''
+            service_amount = move.amount_total or ''
+            goods_amount = ''
+            total_to_pay = move.amount_total or ''
+            affiliate_difference = ''
+            invoice = move.name or ''
+            invoice_date = move.date or ''
+            service_types = ''
+            subservice_types = ''
+            credit_fiscal_ncf_date = '' #move.l10n_do_origin_ncf
+            credit_fiscal_ncf = ''
+            document_type = '' #move.l10n_latam_document_type_id.name
+            ncf_expiration_date = '' #move.ncf_expiration_date
+            modified_ncf_nc_or_db = ''
+            nc_or_db_amount = move.amount_total or ''
+            itbis_amount = ''
+            isc_amount = ''
+            other_taxes_amount = move.amount_tax or ''
+            phone = move.partner_id.phone or ''
+            cell_phone = move.partner_id.mobile or ''
+            email = move.partner_id.email or ''
+
+            worksheet.write(col_num, 0, authorization_insurer)
+            worksheet.write(col_num, 1, service_date)
+            worksheet.write(col_num, 2, affiliate)
+            worksheet.write(col_num, 3, insured_name)
+            worksheet.write(col_num, 4, id_number)
+            worksheet.write(col_num, 5, total_claimed)
+            worksheet.write(col_num, 6, service_amount)
+            worksheet.write(col_num, 7, goods_amount)
+            worksheet.write(col_num, 8, total_to_pay)
+            worksheet.write(col_num, 9, affiliate_difference)
+            worksheet.write(col_num, 10, invoice)
+            worksheet.write(col_num, 11, invoice_date)
+            worksheet.write(col_num, 12, service_types)
+            worksheet.write(col_num, 13, subservice_types)
+            worksheet.write(col_num, 14, credit_fiscal_ncf_date)
+            worksheet.write(col_num, 15, credit_fiscal_ncf)
+            worksheet.write(col_num, 16, document_type)
+            worksheet.write(col_num, 17, ncf_expiration_date)
+            worksheet.write(col_num, 18, modified_ncf_nc_or_db)
+            worksheet.write(col_num, 19, nc_or_db_amount)
+            worksheet.write(col_num, 20, itbis_amount)
+            worksheet.write(col_num, 21, isc_amount)
+            worksheet.write(col_num, 22, other_taxes_amount)
+            worksheet.write(col_num, 23, phone)
+            worksheet.write(col_num, 24, cell_phone)
+            worksheet.write(col_num, 25, email)
 
         return workbook
 
