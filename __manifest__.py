@@ -11,6 +11,9 @@
 
         # wizard views
         'wizard/ars_export_wizard_view.xml',
+        
+        # security
+        'security/ir.model.access.csv',
     ],
     #'icon': 'ars_template_export/static/src/img/icon.png',
     'installable': True,
