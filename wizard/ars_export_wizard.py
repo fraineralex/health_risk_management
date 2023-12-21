@@ -71,7 +71,7 @@ class ArsExportWizard(models.TransientModel):
         history_moves = self.env['account.move'].search(
             [('state', '=', 'posted')])
 
-        for col_num, move in enumerate(history_moves):
+        for col_num, move in enumerate(history_moves, start=1):
             authorization_insurer = ''
             service_date = move.date or ''
             affiliate = ''
@@ -79,22 +79,22 @@ class ArsExportWizard(models.TransientModel):
             id_number = move.partner_id.vat or ''
             total_claimed = move.amount_total_signed or ''
             service_amount = move.amount_total or ''
-            goods_amount = ''
+            goods_amount = move.good_total_amount or ''
             total_to_pay = move.amount_total or ''
             affiliate_difference = ''
             invoice = move.name or ''
-            invoice_date = move.date or ''
-            service_types = ''
+            invoice_date = move.invoice_date or ''
+            service_types = move.service_type or ''
             subservice_types = ''
-            credit_fiscal_ncf_date = '' #move.l10n_do_origin_ncf
+            credit_fiscal_ncf_date = move.l10n_do_ecf_sign_date or ''
             credit_fiscal_ncf = ''
-            document_type = '' #move.l10n_latam_document_type_id.name
-            ncf_expiration_date = '' #move.ncf_expiration_date
+            document_type = move.l10n_latam_document_type_id.name or ''
+            ncf_expiration_date = move.ncf_expiration_date or ''
             modified_ncf_nc_or_db = ''
             nc_or_db_amount = move.amount_total or ''
-            itbis_amount = ''
-            isc_amount = ''
-            other_taxes_amount = move.amount_tax or ''
+            itbis_amount = move.cost_itbis or ''
+            isc_amount = move.amount_tax or ''
+            other_taxes_amount = move.other_taxes or ''
             phone = move.partner_id.phone or ''
             cell_phone = move.partner_id.mobile or ''
             email = move.partner_id.email or ''
