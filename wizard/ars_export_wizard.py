@@ -2,15 +2,37 @@ from odoo import models, fields
 from xlwt import Workbook, easyxf
 from odoo.exceptions import UserError
 import base64
-from werkzeug import urls
 import io
 
 
 class ArsExportWizard(models.TransientModel):
     _name = 'ars.export.wizard'
     _description = 'Wizard to export ARS templates in xlsx and txt formats'
+    
+    txt_binary = fields.Binary(string='Archivo TXT')
+    txt_filename = fields.Char()
+    
+    xls_binary = fields.Binary(string='Archivo XLS')
+    xls_filename = fields.Char()
 
-    def create_report_xlsx(self):
+    def generate_reports(self):
+        headers, title = self._get_headers_and_title()
+        self._save_reports(title, headers)
+        
+        return {
+            'context': self.env.context,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'ars.export.wizard',
+            'res_id': self.id,
+            'view_id': False,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+        }
+
+
+    def _get_headers_and_title(self):
+        title = 'Reporte'
         headers = [
             'AUTORIZACION ASEGURADORA',
             'FECHA SERVICIO',
@@ -39,25 +61,57 @@ class ArsExportWizard(models.TransientModel):
             'Celular',
             'Correo Electrónico'
         ]
+        
+        return [headers, title]
 
-        title = 'Reporte'
 
-        workbook = self._create_workbook(title, headers)
-        workbook_data = io.BytesIO()
-        workbook.save(workbook_data)
-        workbook_data.seek(0)
+    def _save_reports(self, title, headers):
+        workbook, worksheet = self._generate_workbook(headers, title)
+        txt_lines = ''
 
-        excel_base64 = base64.b64decode(workbook_data.getvalue())
-        filename = urls.url_quote(title + '.xls')
-        report_file = excel_base64
-        report_filename = filename
+        history_moves = self.env['account.move'].search(
+            [('state', '=', 'posted')])
 
-        return self._action_save(workbook_data, report_filename)
+        for col_num, move in enumerate(history_moves, start=1):
+            values = {
+                'authorization_insurer': '  ',
+                'service_date': move.date or '  ',
+                'affiliate': '  ',
+                'insured_name': move.partner_id.name or '  ',
+                'id_number': move.partner_id.vat or '  ',
+                'total_claimed': move.amount_total_signed or '  ',
+                'service_amount': move.amount_total or '  ',
+                'goods_amount': move.good_total_amount or '  ',
+                'total_to_pay': move.amount_total or '  ',
+                'affiliate_difference': '  ',
+                'invoice': move.name or '  ',
+                'invoice_date': move.invoice_date or '  ',
+                'service_types': move.service_type or '  ',
+                'subservice_types': '  ',
+                'credit_fiscal_ncf_date': move.l10n_do_ecf_sign_date or '  ',
+                'credit_fiscal_ncf': '  ',
+                'document_type': move.l10n_latam_document_type_id.name or '  ',
+                'ncf_expiration_date': move.ncf_expiration_date or '  ',
+                'modified_ncf_nc_or_db': '  ',
+                'nc_or_db_amount': move.amount_total or '  ',
+                'itbis_amount': move.cost_itbis or '  ',
+                'isc_amount': move.amount_tax or '  ',
+                'other_taxes_amount': move.other_taxes or '  ',
+                'phone': move.partner_id.phone or '  ',
+                'cell_phone': move.partner_id.mobile or '  ',
+                'email': move.partner_id.email or '  ',
+            }
+            
+            for row_num, (key, value) in enumerate(values.items()):
+                worksheet.write(col_num, row_num, value)
+            
+            txt_lines += self._create_txt_line(values)
+        
+        self._generate_txt_file(txt_lines, title)
+        self._generate_xls_file(workbook, title)
 
-    def create_report_txt(self):
-        print("create_report_txt")
 
-    def _create_workbook(self, title, headers):
+    def _generate_workbook(self, headers, title):
         workbook = Workbook()
         worksheet = workbook.add_sheet(title)
         excel_units = 256
@@ -67,80 +121,38 @@ class ArsExportWizard(models.TransientModel):
         for col_num, header in enumerate(headers):
             worksheet.col(col_num).width = column_width
             worksheet.write(0, col_num, header, header_style)
+        
+        return [workbook, worksheet]
+    
 
-        history_moves = self.env['account.move'].search(
-            [('state', '=', 'posted')])
+    def _generate_xls_file(self, workbook, title):
+        workbook_data = io.BytesIO()
+        workbook.save(workbook_data)
+        workbook_data.seek(0)
 
-        for col_num, move in enumerate(history_moves, start=1):
-            authorization_insurer = ''
-            service_date = move.date or ''
-            affiliate = ''
-            insured_name = move.partner_id.name or ''
-            id_number = move.partner_id.vat or ''
-            total_claimed = move.amount_total_signed or ''
-            service_amount = move.amount_total or ''
-            goods_amount = move.good_total_amount or ''
-            total_to_pay = move.amount_total or ''
-            affiliate_difference = ''
-            invoice = move.name or ''
-            invoice_date = move.invoice_date or ''
-            service_types = move.service_type or ''
-            subservice_types = ''
-            credit_fiscal_ncf_date = move.l10n_do_ecf_sign_date or ''
-            credit_fiscal_ncf = ''
-            document_type = move.l10n_latam_document_type_id.name or ''
-            ncf_expiration_date = move.ncf_expiration_date or ''
-            modified_ncf_nc_or_db = ''
-            nc_or_db_amount = move.amount_total or ''
-            itbis_amount = move.cost_itbis or ''
-            isc_amount = move.amount_tax or ''
-            other_taxes_amount = move.other_taxes or ''
-            phone = move.partner_id.phone or ''
-            cell_phone = move.partner_id.mobile or ''
-            email = move.partner_id.email or ''
-
-            worksheet.write(col_num, 0, authorization_insurer)
-            worksheet.write(col_num, 1, service_date)
-            worksheet.write(col_num, 2, affiliate)
-            worksheet.write(col_num, 3, insured_name)
-            worksheet.write(col_num, 4, id_number)
-            worksheet.write(col_num, 5, total_claimed)
-            worksheet.write(col_num, 6, service_amount)
-            worksheet.write(col_num, 7, goods_amount)
-            worksheet.write(col_num, 8, total_to_pay)
-            worksheet.write(col_num, 9, affiliate_difference)
-            worksheet.write(col_num, 10, invoice)
-            worksheet.write(col_num, 11, invoice_date)
-            worksheet.write(col_num, 12, service_types)
-            worksheet.write(col_num, 13, subservice_types)
-            worksheet.write(col_num, 14, credit_fiscal_ncf_date)
-            worksheet.write(col_num, 15, credit_fiscal_ncf)
-            worksheet.write(col_num, 16, document_type)
-            worksheet.write(col_num, 17, ncf_expiration_date)
-            worksheet.write(col_num, 18, modified_ncf_nc_or_db)
-            worksheet.write(col_num, 19, nc_or_db_amount)
-            worksheet.write(col_num, 20, itbis_amount)
-            worksheet.write(col_num, 21, isc_amount)
-            worksheet.write(col_num, 22, other_taxes_amount)
-            worksheet.write(col_num, 23, phone)
-            worksheet.write(col_num, 24, cell_phone)
-            worksheet.write(col_num, 25, email)
-
-        return workbook
-
-    def _action_save(self, report_file, report_filename):
         report_file_base64 = base64.b64encode(
-            report_file.read()).decode('utf-8')
-        attachment = self.env['ir.attachment'].create({
-            'name': report_filename,
-            'datas': report_file_base64,
-            'mimetype': 'application/vnd.ms-excel',
-            'res_model': self._name,
-            'res_id': self.id,
+            workbook_data.read()).decode('utf-8')
+        
+        self.write({
+            'xls_filename': title + '.xls',
+            'xls_binary': report_file_base64
         })
 
-        return {
-            'name': 'Download',
-            'type': 'ir.actions.act_url',
-            'url': '/web/content/%s?download=true' % attachment.id,
-        }
+ 
+    def _create_txt_line(self, values):
+        txt_line = ''
+        for key, value in values.items():
+            txt_line += str(value) + '   '
+        return txt_line[:-1] + '\n'
+
+
+    def _generate_txt_file(self, txt_lines, title):
+        txt_file = io.BytesIO()
+        txt_file.write(txt_lines.encode('utf-8'))
+        txt_file.seek(0)
+        txt_file_base64 = base64.b64encode(txt_file.read()).decode('utf-8')
+            
+        self.write({
+            'txt_filename': title + '.txt',
+            'txt_binary': txt_file_base64
+        })
