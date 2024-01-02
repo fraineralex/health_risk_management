@@ -74,36 +74,39 @@ class ArsExportWizard(models.TransientModel):
 
         for col_num, move in enumerate(history_moves, start=1):
             values = {
-                'authorization_insurer': '  ',
-                'service_date': move.date or '  ',
-                'affiliate': '  ',
-                'insured_name': move.partner_id.name or '  ',
-                'id_number': move.partner_id.vat or '  ',
-                'total_claimed': move.amount_total_signed or '  ',
-                'service_amount': move.amount_total or '  ',
-                'goods_amount': move.good_total_amount or '  ',
-                'total_to_pay': move.amount_total or '  ',
-                'affiliate_difference': '  ',
-                'invoice': move.name or '  ',
-                'invoice_date': move.invoice_date or '  ',
-                'service_types': move.service_type or '  ',
-                'subservice_types': '  ',
-                'credit_fiscal_ncf_date': move.l10n_do_ecf_sign_date or '  ',
-                'credit_fiscal_ncf': '  ',
-                'document_type': move.l10n_latam_document_type_id.name or '  ',
-                'ncf_expiration_date': move.ncf_expiration_date or '  ',
-                'modified_ncf_nc_or_db': '  ',
-                'nc_or_db_amount': move.amount_total or '  ',
-                'itbis_amount': move.cost_itbis or '  ',
-                'isc_amount': move.amount_tax or '  ',
-                'other_taxes_amount': move.other_taxes or '  ',
-                'phone': move.partner_id.phone or '  ',
-                'cell_phone': move.partner_id.mobile or '  ',
-                'email': move.partner_id.email or '  ',
+                'authorization_insurer': move.auth_num,
+                'service_date': move.invoice_date,
+                'affiliate': move.afiliacion,
+                'insured_name': move.partner_id.name,
+                'id_number': move.partner_id.vat,
+                'total_claimed': move.cober,
+                'service_amount': move.service_total_amount,
+                'goods_amount': move.good_total_amount,
+                'total_to_pay': move.service_total_amount + move.good_total_amount,
+                'affiliate_difference': move.cober_diference,
+                'invoice': move.name,
+                'invoice_date': move.invoice_date,
+                'service_types': move.service_type,
+                'subservice_types': '',
+                'credit_fiscal_ncf_date': move.invoice_date,
+                'credit_fiscal_ncf': move.ref,
+                'document_type': 'F' if move.type == 'out_invoice' else
+                                 'D' if move.is_debit_note else 
+                                 'C' if move.type == 'out_invoice' else
+                                 '',
+                'ncf_expiration_date': move.ncf_expiration_date,
+                'modified_ncf_nc_or_db': move.l10n_do_origin_ncf,
+                'nc_or_db_amount': move.amount_total,
+                'itbis_amount': move.invoiced_itbis,
+                'isc_amount': move.selective_tax,
+                'other_taxes_amount': move.other_taxes,
+                'phone': move.partner_id.phone,
+                'cell_phone': move.partner_id.mobile,
+                'email': move.partner_id.email,
             }
             
             for row_num, (key, value) in enumerate(values.items()):
-                worksheet.write(col_num, row_num, value)
+                worksheet.write(col_num, row_num, value or '')
             
             txt_lines += self._create_txt_line(values)
         
@@ -142,7 +145,10 @@ class ArsExportWizard(models.TransientModel):
     def _create_txt_line(self, values):
         txt_line = ''
         for key, value in values.items():
-            txt_line += str(value) + '   '
+            chunk = str(value) + '   '
+            if value == '':
+                chunk = '      ' # double tab
+            txt_line += chunk 
         return txt_line[:-1] + '\n'
 
 
