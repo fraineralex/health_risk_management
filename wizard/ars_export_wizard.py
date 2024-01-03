@@ -74,32 +74,32 @@ class ArsExportWizard(models.TransientModel):
 
         for col_num, move in enumerate(history_moves, start=1):
             values = {
-                'authorization_insurer': move.auth_num,
+                'authorization_insurer': move.name,
                 'service_date': move.invoice_date,
-                'affiliate': move.afiliacion,
+                'affiliate': move.name,
                 'insured_name': move.partner_id.name,
                 'id_number': move.partner_id.vat,
-                'total_claimed': move.cober,
-                'service_amount': move.service_total_amount,
-                'goods_amount': move.good_total_amount,
-                'total_to_pay': move.service_total_amount + move.good_total_amount,
-                'affiliate_difference': move.cober_diference,
+                'total_claimed': move.name,
+                'service_amount': move.amount_total,
+                'goods_amount': move.amount_total,
+                'total_to_pay': move.amount_total + move.amount_total,
+                'affiliate_difference': move.name,
                 'invoice': move.name,
                 'invoice_date': move.invoice_date,
-                'service_types': move.service_type,
-                'subservice_types': '',
+                'service_types': move.name,
+                'subservice_types': move.name,
                 'credit_fiscal_ncf_date': move.invoice_date,
                 'credit_fiscal_ncf': move.ref,
                 'document_type': 'F' if move.type == 'out_invoice' else
-                                 'D' if move.is_debit_note else 
+                                 #'D' if move.is_debit_note else 
                                  'C' if move.type == 'out_invoice' else
                                  '',
-                'ncf_expiration_date': move.ncf_expiration_date,
-                'modified_ncf_nc_or_db': move.l10n_do_origin_ncf,
+                'ncf_expiration_date': move.name,
+                'modified_ncf_nc_or_db': move.name,
                 'nc_or_db_amount': move.amount_total,
-                'itbis_amount': move.invoiced_itbis,
-                'isc_amount': move.selective_tax,
-                'other_taxes_amount': move.other_taxes,
+                'itbis_amount': move.name,
+                'isc_amount': move.name,
+                'other_taxes_amount': move.name,
                 'phone': move.partner_id.phone,
                 'cell_phone': move.partner_id.mobile,
                 'email': move.partner_id.email,
@@ -148,11 +148,9 @@ class ArsExportWizard(models.TransientModel):
     def _create_txt_line(self, values):
         txt_line = ''
         for key, value in values.items():
-            # if value is None, replace it with an empty string
-            chunk = str(value or '') + '   '
-            if value == '':
-                chunk = '      ' # double tab
-            txt_line += chunk 
+            # if value is None, replace it with an empty tab string
+            chunk = str(value) if value else '  ' + '   '
+            txt_line += chunk
         return txt_line[:-1] + '\n'
 
 
