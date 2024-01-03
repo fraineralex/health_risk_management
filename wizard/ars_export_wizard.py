@@ -1,9 +1,7 @@
 from odoo import models, fields
 from xlwt import Workbook, easyxf
-from odoo.exceptions import UserError
 import base64
 import io
-
 
 class ArsExportWizard(models.TransientModel):
     _name = 'ars.export.wizard'
@@ -19,6 +17,7 @@ class ArsExportWizard(models.TransientModel):
         headers, title = self._get_headers_and_title()
         self._save_reports(title, headers)
         
+        # return the action to open the wizard in a new tab with the files ready to download
         return {
             'context': self.env.context,
             'view_type': 'form',
@@ -33,6 +32,7 @@ class ArsExportWizard(models.TransientModel):
 
     def _get_headers_and_title(self):
         title = 'Reporte'
+        # xls headers
         headers = [
             'AUTORIZACION ASEGURADORA',
             'FECHA SERVICIO',
@@ -105,6 +105,7 @@ class ArsExportWizard(models.TransientModel):
                 'email': move.partner_id.email,
             }
             
+            # write values in the worksheet
             for row_num, (key, value) in enumerate(values.items()):
                 worksheet.write(col_num, row_num, value or '')
             
@@ -121,6 +122,8 @@ class ArsExportWizard(models.TransientModel):
         column_width = 30 * excel_units
         header_style = easyxf(
             'pattern: pattern solid, fore_colour blue; font: colour white, bold True;')
+        
+        # write headers with their styles
         for col_num, header in enumerate(headers):
             worksheet.col(col_num).width = column_width
             worksheet.write(0, col_num, header, header_style)
@@ -145,7 +148,8 @@ class ArsExportWizard(models.TransientModel):
     def _create_txt_line(self, values):
         txt_line = ''
         for key, value in values.items():
-            chunk = str(value) + '   '
+            # if value is None, replace it with an empty string
+            chunk = str(value or '') + '   '
             if value == '':
                 chunk = '      ' # double tab
             txt_line += chunk 

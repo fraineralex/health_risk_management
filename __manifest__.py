@@ -5,6 +5,7 @@
     'category': 'Accounting',
     'summary': 'ARS Template Export Module',
     'description': "ARS Template Export Module",
+    'depends': ['account'],
     'data': [
         # views
         'views/ir.ui.menu.xml',
@@ -15,7 +16,6 @@
         # security
         'security/ir.model.access.csv',
     ],
-    #'icon': 'ars_template_export/static/src/img/icon.png',
     'installable': True,
     'application': True,
     'auto_install': True,
