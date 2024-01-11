@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_ars_export_wizard,ARS Export Wizard,model_ars_export_wizard,base.group_user,1,1,1,1
+access_ars_report,ARS Report,model_ars_report,base.group_user,1,1,1,1
+access_ars_report_line,ARS Report Line,model_ars_report_line,base.group_user,1,1,1,1

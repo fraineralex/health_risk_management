@@ -8,10 +8,7 @@
     'depends': ['account'],
     'data': [
         # views
-        'views/ir.ui.menu.xml',
-
-        # wizard views
-        'wizard/ars_export_wizard_view.xml',
+        'views/ars_report_view.xml',
         
         # security
         'security/ir.model.access.csv',
