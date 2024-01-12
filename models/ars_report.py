@@ -3,6 +3,7 @@ from odoo.exceptions import ValidationError
 from xlwt import Workbook, easyxf
 import base64
 import io
+from datetime import datetime, timedelta
 
 class ArsReport(models.Model):
     _name = 'ars.report'
@@ -10,37 +11,60 @@ class ArsReport(models.Model):
     
     claimant_code = fields.Char(string='Código Reclamante')
     name = fields.Char(string='Periodo', placeholder='Mes/Año')
-    #insurer_id = fields.Many2one('medical.insurance.company', string='Aseguradora')
-    insurer_id = fields.Selection([
-        ('1', 'Aseguradora 1'),
-        ('2', 'Aseguradora 2'),
-    ], string='Aseguradora')
+    insurer_id = fields.Many2one('medical.insurance.company', string='Aseguradora', required=True)
     claimant_type = fields.Selection([
         ('medico', 'MEDICO'),
         ('no_medico', 'NO_MEDICO'),
     ], string='Tipo Reclamante')
     line_ids = fields.One2many('ars.report.line', 'report_id', string='Líneas de Reporte')
+    date_from = fields.Char(string='Fecha Inicio', required=True)
+    date_to = fields.Char(string='Fecha Fin', required=True)
     
-    @api.constrains('name')
+    @api.constrains('date_from', 'date_to')
     def _check_name(self):
         for record in self:
-            if record.name and not self._check_format(record.name):
-                raise ValidationError(_("El formato del periodo debe ser 'Mes/Año'"))
+            if record.date_from and record.date_to:
+                self._check_format(record.date_from, record.date_to)
 
-    def _check_format(self, name):
-        month, year = int(name.split('/')[0]), int(name.split('/')[1])
-        return month <= 12 and month > 0 and year > 0
+
+    def _check_format(self, date_from, date_to):
+        month_from, year_from = int(date_from.split('/')[0]), int(date_from.split('/')[1])
+        month_to, year_to = int(date_to.split('/')[0]), int(date_to.split('/')[1])
+        
+        if month_from < 1 or month_from > 12 or month_to < 1 or month_to > 12:
+            raise ValidationError(_("Mes invalido, debes ingresar un mes entre 1-12."))
+        elif year_from < 1 or year_to < 1:
+            raise ValidationError(_("Año invalido, debes ingresar un valor mayor que cero."))
+        elif year_from > year_to or (year_from == year_to and month_from > month_to):
+            raise ValidationError(_("Valores invalidos, la fecha final debe ser mayor que la fecha de inicio."))
+        else:
+            self.name = '{}/{}-{}/{}'.format(month_from,year_from,month_to,year_to)
+        
     
     @api.model
     def create(self, vals):
-        ars_report = super().create(vals)
+        report = super().create(vals)
         
-        history_moves = self.env['account.move'].search(
-            [('state', '=', 'posted')])
+        if not report.date_from or not report.date_to or not report.insurer_id:
+            raise ValidationError(_("Los campos 'Fecha Inicio', 'Fecha Fin' y 'Aseguradora' son requeridos."))
+        
+        date_from = datetime.strptime('01/' + report.date_from, '%d/%m/%Y')
+        date_to = datetime.strptime('01/' + report.date_to, '%d/%m/%Y')
+
+        last_day_of_month = (date_to.replace(month=date_to.month+1, day=1) - timedelta(days=1)).day
+        date_to = date_to.replace(day=last_day_of_month)
+
+        history_moves = self.env['account.move'].search([
+            ('state', '=', 'posted'),
+            ('invoice_date', '>=', date_from),
+            ('invoice_date', '<=', date_to),
+            ('insurer_id', '=', report.insurer_id)
+            ])
+        
         line_ids = []
         for move in history_moves:
             line_ids = []
-            """ values = {
+            values = {
                 'authorization_insurer': move.auth_num,
                 'service_date': move.invoice_date,
                 'affiliate': move.afiliacion,
@@ -54,7 +78,7 @@ class ArsReport(models.Model):
                 'invoice': move.name,
                 'invoice_date': move.invoice_date,
                 'service_types': move.service_type,
-                'subservice_types': '',
+                'subservice_types': move.subservice_type,
                 'credit_fiscal_ncf_date': move.invoice_date,
                 'credit_fiscal_ncf': move.ref,
                 'document_type': 'F' if move.type == 'out_invoice' else
@@ -70,47 +94,18 @@ class ArsReport(models.Model):
                 'phone': move.partner_id.phone,
                 'cell_phone': move.partner_id.mobile,
                 'email': move.partner_id.email,
-            } """
-            
-            values = {
-                'authorization_insurer': 'move.auth_num',
-                'service_date': move.invoice_date,
-                'affiliate': 'move.afiliacion',
-                'insured_name': 'move.partner_id.name',
-                'id_number': 'move.partner_id.vat',
-                'total_claimed': 0.0,
-                'service_amount': move.amount_total,
-                'goods_amount': 0.0,
-                'total_to_pay': 0.0,
-                'affiliate_difference': 0.0,
-                'invoice': move.name,
-                'invoice_date': move.invoice_date,
-                'service_types': 'move.service_type',
-                'subservice_types': '',
-                'credit_fiscal_ncf_date': move.invoice_date,
-                'credit_fiscal_ncf': 'move.ref',
-                'document_type': 'F',
-                'ncf_expiration_date': move.invoice_date,
-                'modified_ncf_nc_or_db': 'move.l10n_do_origin_ncf',
-                'nc_or_db_amount': move.amount_total,
-                'itbis_amount': move.amount_total,
-                'isc_amount': move.amount_total,
-                'other_taxes_amount': move.amount_total,
-                'phone': 'move.partner_id.phone',
-                'cell_phone': 'move.partner_id.mobile',
-                'email': 'move.partner_id.email',
             }
             
             created_line = self.env['ars.report.line'].create({
-                'report_id': ars_report.id,
+                'report_id': report.id,
                 **values
             })
             
             line_ids.append(created_line.id)   
             
-        ars_report.write({'line_ids': [(6, 0, line_ids)]})
+        report.write({'line_ids': [(6, 0, line_ids)]})
 
-        return ars_report
+        return report
     
     def action_open_lines(self):
         self.ensure_one()

@@ -70,9 +70,9 @@
                                 </div>
                                 <field name="claimant_code" nolabel="1"/>
 
-                                <label for="name" string="Período" style="font-weight:bold;"/>
+                                <label for="date_from" string="Período" style="font-weight:bold;"/>
                                 <div class="d-flex">
-                                    <field name="name" options="{'datepicker': {'warn_future': true}}" nolabel="1"/>
+                                    <field name="date_from" class="oe_inline" placeholder="Mes/Año" /> - <field name="date_to" class="oe_inline" placeholder="Mes/Año"/>
                                 </div>
                             </group>
                             <group id="header_right_group">
