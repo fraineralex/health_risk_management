@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="view_ars_report_line_tree" model="ir.ui.view">
-            <field name="name">ars.report.line.tree</field>
-            <field name="model">ars.report.line</field>
+        <record id="view_ars_template_report_line_tree" model="ir.ui.view">
+            <field name="name">ars.template.report.line.tree</field>
+            <field name="model">ars.template.report.line</field>
             <field name="arch" type="xml">
                 <tree string="ARS Report Line" create="false" delete="false">
                     <field name="authorization_insurer"/>
@@ -36,9 +36,9 @@
             </field>
         </record>
 
-        <record id="view_ars_report_tree" model="ir.ui.view">
-            <field name="name">ars.report.tree</field>
-            <field name="model">ars.report</field>
+        <record id="view_ars_template_report_tree" model="ir.ui.view">
+            <field name="name">ars.template.report.tree</field>
+            <field name="model">ars.template.report</field>
             <field name="arch" type="xml">
                 <tree string="Reporte ARS">
                     <field name="name"/>
@@ -49,15 +49,16 @@
             </field>
         </record>
 
-        <record id="view_ars_report_form" model="ir.ui.view">
-            <field name="name">ars.report.form</field>
-            <field name="model">ars.report</field>
+        <record id="view_ars_template_report_form" model="ir.ui.view">
+            <field name="name">ars.template.report.form</field>
+            <field name="model">ars.template.report</field>
             <field name="arch" type="xml">
                 <form string="Reporte ARS">
                     <header>
-                        <button name="export_to_xlsx" string="Exportar a Excel" type="object" class="btn-success" />
+                        <button name="export_to_xlsx" string="Exportar a Excel" type="object" class="btn-success"/>
                         <button name="export_to_txt" string="Exportar a TXT" type="object" class="btn-info"/>
-                        <button name="action_open_lines" type="object" string="Abrir Líneas" class="oe_stat_button btn-primary"/>
+                        <button name="action_open_lines" type="object" string="Abrir Líneas"
+                                class="oe_stat_button btn-primary"/>
                     </header>
                     <sheet>
                         <div>
@@ -72,25 +73,26 @@
 
                                 <label for="date_from" string="Período" style="font-weight:bold;"/>
                                 <div class="d-flex">
-                                    <field name="date_from" class="oe_inline" placeholder="Mes/Año" /> - <field name="date_to" class="oe_inline" placeholder="Mes/Año"/>
+                                    <field name="date_from" class="oe_inline" placeholder="Mes/Año"/> - <field
+                                        name="date_to" class="oe_inline" placeholder="Mes/Año"/>
                                 </div>
                             </group>
                             <group id="header_right_group">
                                 <div class="o_td_label">
-                                    <label for="insurer_id" string="Aseguradora" style="font-weight:bold;" />
+                                    <label for="insurer_id" string="Aseguradora" style="font-weight:bold;"/>
                                 </div>
-                                <field name="insurer_id" nolabel="1" />
+                                <field name="insurer_id" nolabel="1"/>
 
                                 <label for="claimant_type" nolabel="1"/>
                                 <div class="d-flex">
-                                    <field name="claimant_type" nolabel="1" />
+                                    <field name="claimant_type" nolabel="1"/>
                                 </div>
                             </group>
                         </group>
                         <notebook>
                             <page id="invoice_tab" string="Líneas de Reporte ARS">
                                 <field name="line_ids" widget="section_and_note_one2many" mode="tree" readonly="1">
-                                    <tree editable="bottom" string="Lineas de Reporte" readonly="1">
+                                    <tree editable="bottom" string="Lineas de Reporte">
                                         <!-- Displayed fields -->
                                         <field name="authorization_insurer"/>
                                         <field name="service_date"/>
@@ -127,9 +129,9 @@
             </field>
         </record>
 
-        <record id="view_ars_report_filter" model="ir.ui.view">
-            <field name="name">ars.report.select</field>
-            <field name="model">ars.report</field>
+        <record id="view_ars_template_report_filter" model="ir.ui.view">
+            <field name="name">ars.template.report.select</field>
+            <field name="model">ars.template.report</field>
             <field name="arch" type="xml">
                 <search string="Search ARS Report">
                     <field name="name"/>
@@ -140,24 +142,26 @@
             </field>
         </record>
 
-        <record id="action_ars_reports" model="ir.actions.act_window">
-            <field name="name">Reporte ARS</field>
+        <record id="action_ars_template_reports" model="ir.actions.act_window">
+            <field name="name">Reporte archivos ARS</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">ars.report</field>
+            <field name="res_model">ars.template.report</field>
             <field name="view_mode">tree,form</field>
             <field name="target">current</field>
-            <field name="search_view_id" ref="view_ars_report_filter"/>
+            <field name="search_view_id" ref="view_ars_template_report_filter"/>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                    Haz clic en Crear para añadir un nuevo Reporte ARS.
+                    Haz clic en Crear para añadir un nuevo Reporte archivos ARS.
                 </p>
                 <p>
-                    Puedes exportar el reporte a un archivo de texto o a un archivo de Excel desde la vista de formulario.
+                    Puedes exportar el reporte a un archivo de texto o a un archivo de Excel desde la vista de
+                    formulario.
                 </p>
             </field>
         </record>
 
         <!-- Inherit from account.menu_finance_reports menu -->
-        <menuitem id="menuitem_ars_report" action="action_ars_reports" parent="account.account_reports_management_menu" sequence="1"/>
+        <menuitem id="menuitem_ars_template_report" string="Reporte archivos ARS" action="action_ars_template_reports"
+                  parent="account.account_reports_management_menu" sequence="1"/>
     </data>
 </odoo>

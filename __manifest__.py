@@ -1,7 +1,7 @@
 # __manifest__.py
 {
     'name': 'ARS Template Export',
-    'version': '1.0',
+    'version': '13.0.1',
     'category': 'Accounting',
     'summary': 'ARS Template Export Module',
     'description': "ARS Template Export Module",
