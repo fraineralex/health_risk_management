@@ -12,7 +12,7 @@ class ArsTemplateReport(models.Model):
 
     claimant_code = fields.Char(string='Código Reclamante')
     name = fields.Char(string='Periodo', placeholder='Mes/Año')
-    insurer_id = fields.Char(string='Aseguradora') #fields.Many2one('medical.insurance.company', string='Aseguradora', required=True)
+    insurer_id = fields.Many2one('medical.insurance.company', string='Aseguradora', required=True)
     claimant_type = fields.Selection([
         ('medico', 'MEDICO'),
         ('no_medico', 'NO_MEDICO'),
@@ -69,42 +69,42 @@ class ArsTemplateReport(models.Model):
             ('state', '=', 'posted'),
             ('invoice_date', '>=', date_from),
             ('invoice_date', '<=', date_to),
-            #('ars', '=', report.insurer_id.id)
+            ('ars', '=', report.insurer_id.id)
         ])
 
         line_ids = []
         for move in history_moves:
             values = {
                 'report_id': report.id,
-                'authorization_insurer': "move.auth_num",
+                'authorization_insurer': move.auth_num,
                 'service_date': move.invoice_date,
-                'affiliate': "move.afiliacion",
-                'insured_name': "move.partner_id.name",
-                'id_number': 10 or move.partner_id.vat,
-                'total_claimed': 10 or move.cober,
-                'service_amount': 10 or move.service_total_amount,
-                'goods_amount': 10 or move.good_total_amount,
-                'total_to_pay': 10 or move.service_total_amount + move.good_total_amount,
-                'affiliate_difference': 10 or move.cober_diference,
-                'invoice': "move.name",
+                'affiliate': move.afiliacion,
+                'insured_name': move.partner_id.name,
+                'id_number': move.partner_id.vat,
+                'total_claimed': move.cober,
+                'service_amount': move.service_total_amount,
+                'goods_amount': move.good_total_amount,
+                'total_to_pay': move.service_total_amount + move.good_total_amount,
+                'affiliate_difference': move.cober_diference,
+                'invoice': move.name,
                 'invoice_date': move.invoice_date,
-                'service_types': "move.service_type",
-                'subservice_types': "move.subservice_type",
+                'service_types': move.service_type,
+                'subservice_types': move.subservice_type,
                 'credit_fiscal_ncf_date': move.invoice_date,
-                'credit_fiscal_ncf': "move.ref",
+                'credit_fiscal_ncf': move.ref,
                 'document_type': 'F' if move.type == 'out_invoice' else
-                #'D' if move.is_debit_note else
-                #'C' if move.type == 'out_invoice' else
+                'D' if move.is_debit_note else
+                'C' if move.type == 'out_invoice' else
                 '',
-                'ncf_expiration_date': move.invoice_date or move.ncf_expiration_date,
-                'modified_ncf_nc_or_db': 'move.l10n_do_origin_ncf',
-                'nc_or_db_amount': 10 or move.amount_total,
-                'itbis_amount': 10 or move.invoiced_itbis,
-                'isc_amount': 10 or move.selective_tax,
-                'other_taxes_amount': 10 or move.other_taxes,
-                'phone': 'move.partner_id.phone',
-                'cell_phone': 'move.partner_id.mobile',
-                'email': 'move.partner_id.email',
+                'ncf_expiration_date': move.ncf_expiration_date,
+                'modified_ncf_nc_or_db': move.l10n_do_origin_ncf,
+                'nc_or_db_amount': move.amount_total,
+                'itbis_amount': move.invoiced_itbis,
+                'isc_amount': move.selective_tax,
+                'other_taxes_amount': move.other_taxes,
+                'phone': move.partner_id.phone,
+                'cell_phone': move.partner_id.mobile,
+                'email': move.partner_id.email,
             }
 
             created_line = self.env['ars.template.report.line'].create(values)
