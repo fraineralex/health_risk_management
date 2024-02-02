@@ -53,12 +53,12 @@
             <field name="name">ars.template.report.form</field>
             <field name="model">ars.template.report</field>
             <field name="arch" type="xml">
-                <form string="Reporte ARS">
+                <form string="Reporte ARS" create="false">
                     <header>
+                        <button name="generate_report" string="Generar Reporte" class="btn-primary" type="object" />
                         <button name="export_to_xlsx" string="Exportar a Excel" type="object" class="btn-success"/>
                         <button name="export_to_txt" string="Exportar a TXT" type="object" class="btn-info"/>
-                        <button name="action_open_lines" type="object" string="Abrir Líneas"
-                                class="oe_stat_button btn-primary"/>
+                        <button name="action_open_lines" type="object" string="Abrir Líneas" class="oe_stat_button btn-primary"/>
                     </header>
                     <sheet>
                         <div>
@@ -73,8 +73,8 @@
 
                                 <label for="date_from" string="Período" style="font-weight:bold;"/>
                                 <div class="d-flex">
-                                    <field name="date_from" class="oe_inline" placeholder="Mes/Año"/> - <field
-                                        name="date_to" class="oe_inline" placeholder="Mes/Año"/>
+                                    <field name="date_from" class="oe_inline" placeholder="Mes/Año"/>
+ -                                    <field name="date_to" class="oe_inline" placeholder="Mes/Año"/>
                                 </div>
                             </group>
                             <group id="header_right_group">
@@ -127,7 +127,7 @@
                     </sheet>
                 </form>
             </field>
-        </record>
+        </record>>
 
         <record id="view_ars_template_report_filter" model="ir.ui.view">
             <field name="name">ars.template.report.select</field>
@@ -161,7 +161,6 @@
         </record>
 
         <!-- Inherit from account.menu_finance_reports menu -->
-        <menuitem id="menuitem_ars_template_report" string="Reporte archivos ARS" action="action_ars_template_reports"
-                  parent="account.account_reports_management_menu" sequence="1"/>
+        <menuitem id="menuitem_ars_template_report" string="Reporte archivos ARS" action="action_ars_template_reports" parent="account.account_reports_management_menu" sequence="1"/>
     </data>
 </odoo>
