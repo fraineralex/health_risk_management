@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_ars_report,access_ars_report,model_ars_template_report,account.group_account_manager,1,1,1,1
-access_ars_report_line,access_ars_report_line,model_ars_template_report_line,account.group_account_manager,1,1,1,1
+access_hrm_report,access_hrm_report,model_hrm_template_report,account.group_account_manager,1,1,1,1
+access_hrm_report_line,access_hrm_report_line,model_hrm_template_report_line,account.group_account_manager,1,1,1,1
+
+access_medical_insurance_company,access_medical_insurance_company,model_medical_insurance_company,account.group_account_manager,1,1,1,1
