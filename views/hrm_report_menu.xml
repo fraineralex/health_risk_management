@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menuitem_hrm_template_report" name="Health Risk Managers Files Report" action="action_hrm_template_reports" parent="account.account_reports_management_menu" sequence="1"/>
+</odoo>
