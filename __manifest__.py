@@ -1,15 +1,17 @@
-# __manifest__.py
 {
-    'name': 'ARS Template Export',
-    'version': '13.0.1',
+    'name': 'Health Risk Manager Reporter',
+    'version': '1.0.0',
     'category': 'Accounting',
-    'summary': 'ARS Template Export Module',
-    'description': "ARS Template Export Module",
+    'summary': 'Odoo Module designed to manage Health Risk Management (HRM) reports.',
+    'description': "Odoo Module designed to manage Health Risk Management (HRM) reports.",
     'depends': ['account'],
+    'author': 'Frainer Encarnación',
+    'website': 'https://fraineralex.dev',
     'data': [
         # views
-        'views/ars_report_view.xml',
-        
+        'views/hrm_report_view.xml',
+        'views/hrm_report_menu.xml',
+
         # security
         'security/ir.model.access.csv',
     ],
