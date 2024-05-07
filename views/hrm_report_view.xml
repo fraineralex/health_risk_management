@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_hrm_template_report_line_tree" model="ir.ui.view">
+            <field name="name">hrm.template.report.line.tree</field>
+            <field name="model">hrm.template.report.line</field>
+            <field name="arch" type="xml">
+                <tree string="Health Risk Managers Report Line" create="false" delete="false">
+                    <field name="authorization_insurer"/>
+                    <field name="service_date"/>
+                    <field name="affiliate"/>
+                    <field name="insured_name"/>
+                    <field name="id_number"/>
+                    <field name="total_claimed"/>
+                    <field name="service_amount"/>
+                    <field name="goods_amount"/>
+                    <field name="total_to_pay"/>
+                    <field name="affiliate_difference"/>
+                    <field name="invoice"/>
+                    <field name="invoice_date"/>
+                    <field name="service_types"/>
+                    <field name="subservice_types"/>
+                    <field name="credit_fiscal_ncf_date"/>
+                    <field name="credit_fiscal_ncf"/>
+                    <field name="document_type"/>
+                    <field name="ncf_expiration_date"/>
+                    <field name="modified_ncf_nc_or_db"/>
+                    <field name="nc_or_db_amount"/>
+                    <field name="itbis_amount"/>
+                    <field name="isc_amount"/>
+                    <field name="other_taxes_amount"/>
+                    <field name="phone"/>
+                    <field name="cell_phone"/>
+                    <field name="email"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_hrm_template_report_tree" model="ir.ui.view">
+            <field name="name">hrm.template.report.tree</field>
+            <field name="model">hrm.template.report</field>
+            <field name="arch" type="xml">
+                <tree string="Health Risk Managers Report">
+                    <field name="name"/>
+                    <field name="claimant_code"/>
+                    <field name="insurer_id" options='{"create": True, "create_edit": True}'/>
+                    <field name="claimant_type"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_hrm_template_report_form" model="ir.ui.view">
+            <field name="name">hrm.template.report.form</field>
+            <field name="model">hrm.template.report</field>
+            <field name="arch" type="xml">
+                <form string="Health Risk Managers Report" create="false">
+                    <header>
+                        <button name="generate_report" string="Generate Report" class="btn-primary" type="object" />
+                        <button name="export_to_xlsx" string="Export to Excel" type="object" class="btn-success"/>
+                        <button name="export_to_txt" string="Export to TXT" type="object" class="btn-info"/>
+                        <button name="action_open_lines" type="object" string="Open Lines" class="oe_stat_button btn-primary"/>
+                    </header>
+                    <sheet>
+                        <div>
+                            <h1>Health Risk Managers Report</h1>
+                        </div>
+                        <group>
+                            <group id="header_left_group">
+                                <div class="o_td_label">
+                                    <label for="claimant_code" string="Claimant Code" style="font-weight:bold;"/>
+                                </div>
+                                <field name="claimant_code" nolabel="1"/>
+
+                                <label for="date_from" string="Period" style="font-weight:bold;"/>
+                                <div class="d-flex">
+                                    <field name="date_from" class="oe_inline" placeholder="Month/Year"/>
+                                    <field name="date_to" class="oe_inline" placeholder="Month/Year"/>
+                                </div>
+                            </group>
+                            <group id="header_right_group">
+                                <div class="o_td_label">
+                                    <label for="insurer_id" string="Ensurer" style="font-weight:bold;"/>
+                                </div>
+                                <field name="insurer_id" nolabel="1"/>
+
+                                <label for="claimant_type" nolabel="1"/>
+                                <div class="d-flex">
+                                    <field name="claimant_type" nolabel="1"/>
+                                </div>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page id="invoice_tab" string="Health Risk Managers Report Lines">
+                                <field name="line_ids" widget="section_and_note_one2many" mode="tree" readonly="1">
+                                    <tree editable="bottom" string="Report Lines">
+                                        <!-- Displayed fields -->
+                                        <field name="authorization_insurer"/>
+                                        <field name="service_date"/>
+                                        <field name="affiliate"/>
+                                        <field name="insured_name"/>
+                                        <field name="id_number"/>
+                                        <field name="total_claimed"/>
+                                        <field name="service_amount"/>
+                                        <field name="goods_amount"/>
+                                        <field name="total_to_pay"/>
+                                        <field name="affiliate_difference"/>
+                                        <field name="invoice"/>
+                                        <field name="invoice_date"/>
+                                        <field name="service_types"/>
+                                        <field name="subservice_types"/>
+                                        <field name="credit_fiscal_ncf_date"/>
+                                        <field name="credit_fiscal_ncf"/>
+                                        <field name="document_type"/>
+                                        <field name="ncf_expiration_date"/>
+                                        <field name="modified_ncf_nc_or_db"/>
+                                        <field name="nc_or_db_amount"/>
+                                        <field name="itbis_amount"/>
+                                        <field name="isc_amount"/>
+                                        <field name="other_taxes_amount"/>
+                                        <field name="phone"/>
+                                        <field name="cell_phone"/>
+                                        <field name="email"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>>
+
+        <record id="view_hrm_template_report_filter" model="ir.ui.view">
+            <field name="name">hrm.template.report.select</field>
+            <field name="model">hrm.template.report</field>
+            <field name="arch" type="xml">
+                <search string="Search Health Risk Managers Report">
+                    <field name="name"/>
+                    <field name="claimant_code"/>
+                    <field name="insurer_id"/>
+                    <field name="claimant_type"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_hrm_template_reports" model="ir.actions.act_window">
+            <field name="name">Health Risk Managers Files Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hrm.template.report</field>
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="search_view_id" ref="view_hrm_template_report_filter"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click Create to add a new Health Risk Managers  Files Report.
+                </p>
+                <p>
+                    You can export the report to a text file or an Excel file from the form view.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>
