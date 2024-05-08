@@ -69,39 +69,38 @@ class HrmTemplateReport(models.Model):
             ('state', '=', 'posted'),
             ('invoice_date', '>=', date_from),
             ('invoice_date', '<=', date_to),
-            #('hrm', '=', report.insurer_id.id)
+            #('hrm', '=', report.insurer_id.id) # add this line to filter by insurer
         ])
 
         line_ids = []
         for move in history_moves:
             values = {
                 'report_id': report.id,
-                'authorization_insurer': move.name,
+                'authorization_insurer': move.name, # change this to the field that contains the insurer authorization
                 'service_date': move.invoice_date,
-                'affiliate': move.name,
-                'insured_name': move.partner_id.name,
-                'id_number': move.partner_id.vat,
-                'total_claimed': move.amount_total,
-                'service_amount': move.amount_total,
-                'goods_amount': move.amount_total,
-                'total_to_pay': move.amount_total + move.amount_tax,
-                'affiliate_difference': move.amount_total,
+                'affiliate': move.name, # change this to the field that contains the affiliate
+                'insured_name': move.partner_id.name, # change this to the field that contains the insured name
+                'id_number': move.partner_id.vat, # change this to the field that contains the id number
+                'total_claimed': move.amount_total, # change this to the field that contains the total claimed
+                'service_amount': move.amount_total, 
+                'goods_amount': move.amount_total, # change this to the field that contains the goods amount
+                'total_to_pay': move.amount_total + move.amount_tax, # change this to the field that contains the total to pay
+                'affiliate_difference': move.amount_total, # change this for move.service_total_amount + move.good_total_amount,
                 'invoice': move.name,
                 'invoice_date': move.invoice_date,
                 'service_types': move.move_type,
-                'subservice_types': move.move_type,
+                'subservice_types': move.move_type, # change this to the field that contains the subservice types
                 'credit_fiscal_ncf_date': move.invoice_date,
-                'credit_fiscal_ncf': move.invoice_date,
+                'credit_fiscal_ncf': move.ref,
                 'document_type': 'F' if move.move_type == 'out_invoice' else
-                #'D' if move.is_debit_note else
                 'C' if move.move_type == 'out_invoice' else
                 '',
-                'ncf_expiration_date': move.invoice_date,
-                'modified_ncf_nc_or_db': move.name,
+                'ncf_expiration_date': move.invoice_date, # change this to the field that contains the ncf expiration date
+                'modified_ncf_nc_or_db': move.name, # change this to the field that contains the modified ncf
                 'nc_or_db_amount': move.amount_total,
-                'itbis_amount': move.amount_tax,
-                'isc_amount': move.amount_tax,
-                'other_taxes_amount': move.amount_tax,
+                'itbis_amount': move.amount_tax, # change this to the field that contains the itbis amount
+                'isc_amount': move.amount_tax, # change this to the field that contains the isc amount
+                'other_taxes_amount': move.amount_tax, # change this to the field that contains the other taxes amount
                 'phone': move.partner_id.phone,
                 'cell_phone': move.partner_id.mobile,
                 'email': move.partner_id.email,
