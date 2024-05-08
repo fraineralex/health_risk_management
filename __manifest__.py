@@ -1,5 +1,5 @@
 {
-    'name': 'Health Risk Manager Reporter',
+    'name': 'Health Risk Management Reporter',
     'version': '1.0.0',
     'category': 'Accounting',
     'summary': 'Odoo Module designed to manage Health Risk Management (HRM) reports.',

@@ -5,7 +5,7 @@
             <field name="name">hrm.template.report.line.tree</field>
             <field name="model">hrm.template.report.line</field>
             <field name="arch" type="xml">
-                <tree string="Health Risk Managers Report Line" create="false" delete="false">
+                <tree string="Health Risk Management Report Line" create="false" delete="false">
                     <field name="authorization_insurer"/>
                     <field name="service_date"/>
                     <field name="affiliate"/>
@@ -40,7 +40,7 @@
             <field name="name">hrm.template.report.tree</field>
             <field name="model">hrm.template.report</field>
             <field name="arch" type="xml">
-                <tree string="Health Risk Managers Report">
+                <tree string="Health Risk Management Report">
                     <field name="name"/>
                     <field name="claimant_code"/>
                     <field name="insurer_id" options='{"create": True, "create_edit": True}'/>
@@ -53,7 +53,7 @@
             <field name="name">hrm.template.report.form</field>
             <field name="model">hrm.template.report</field>
             <field name="arch" type="xml">
-                <form string="Health Risk Managers Report" create="false">
+                <form string="Health Risk Management Report" create="false">
                     <header>
                         <button name="generate_report" string="Generate Report" class="btn-primary" type="object" />
                         <button name="export_to_xlsx" string="Export to Excel" type="object" class="btn-success"/>
@@ -62,7 +62,7 @@
                     </header>
                     <sheet>
                         <div>
-                            <h1>Health Risk Managers Report</h1>
+                            <h1>Health Risk Management Report</h1>
                         </div>
                         <group>
                             <group id="header_left_group">
@@ -90,7 +90,7 @@
                             </group>
                         </group>
                         <notebook>
-                            <page id="invoice_tab" string="Health Risk Managers Report Lines">
+                            <page id="invoice_tab" string="Health Risk Management Report Lines">
                                 <field name="line_ids" widget="section_and_note_one2many" mode="tree" readonly="1">
                                     <tree editable="bottom" string="Report Lines">
                                         <!-- Displayed fields -->
@@ -133,7 +133,7 @@
             <field name="name">hrm.template.report.select</field>
             <field name="model">hrm.template.report</field>
             <field name="arch" type="xml">
-                <search string="Search Health Risk Managers Report">
+                <search string="Search Health Risk Management Report">
                     <field name="name"/>
                     <field name="claimant_code"/>
                     <field name="insurer_id"/>
@@ -143,7 +143,7 @@
         </record>
 
         <record id="action_hrm_template_reports" model="ir.actions.act_window">
-            <field name="name">Health Risk Managers Files Report</field>
+            <field name="name">Health Risk Management Files Report</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">hrm.template.report</field>
             <field name="view_mode">tree,form</field>
@@ -151,7 +151,7 @@
             <field name="search_view_id" ref="view_hrm_template_report_filter"/>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                    Click Create to add a new Health Risk Managers  Files Report.
+                    Click Create to add a new Health Risk Management  Files Report.
                 </p>
                 <p>
                     You can export the report to a text file or an Excel file from the form view.
